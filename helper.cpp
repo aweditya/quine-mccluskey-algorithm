@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <set>
 
 /**
  * @brief Return the number of ones in the binary representation
@@ -103,16 +104,27 @@ int findPositionOfDifference(std::string a, std::string b)
     return index;
 }
 
-void groupImplicants(std::vector<int> groups[], int n)
+std::vector<int> mergeVectors(std::vector<int> a, std::vector<int> b)
 {
-    std::vector<std::string> binary;
-    std::vector<std::vector<int>> implicants;
-    // groups has 5 rows: 0, 1, 2, 3, 4
+    std::vector<int> c;
+    for (auto x : a) 
+    {
+        c.push_back(x);
+    }
+    for (auto x : b)
+    {
+        c.push_back(x);
+    }
+    return c;
+}
+
+void groupImplicants(std::vector<int> groups[], int n, int minterms[], int mintermCount, std::vector<std::string> &binary, std::vector<std::vector<int>>& implicants)
+{
+    std::set<int> used;
     for (int i = 0; i < n; i++)
     {
         for (auto x : groups[i])
         {
-            bool used = false;
             for (auto y : groups[i + 1])
             {
                 std::string xBinary = convertToBinary(x, n);
@@ -124,20 +136,24 @@ void groupImplicants(std::vector<int> groups[], int n)
                     std::string key = xBinary;
                     key[index] = '-';
                     binary.push_back(key);
-                    std::vector<int> pair;
-                    pair.push_back(x);
-                    pair.push_back(y);
-                    implicants.push_back(pair);
-
-                    used = true;
+                    std::vector<int> a(1, x);
+                    std::vector<int> b(1, y);
+                    implicants.push_back(mergeVectors(a, b));
+                    used.insert(x);
+                    used.insert(y);
                 }
             }
-            if (!used)
-            {
-                binary.push_back(convertToBinary(x, n));
-                std::vector<int> implicant(1, x); 
-                implicants.push_back(implicant);
-            }
+        }
+    }
+
+    // Add minterms that have not been grouped
+    for (int i = 0; i < mintermCount; i++)
+    {
+        if (used.find(minterms[i]) == used.end()) 
+        {
+            binary.push_back(convertToBinary(minterms[i], n));
+            std::vector<int> a(1, minterms[i]);
+            implicants.push_back(a);
         }
     }
 
@@ -165,5 +181,7 @@ int main(int argc, char **argv)
         groupedByOnes[ones].push_back(minterms[i]);
     }
 
-    groupImplicants(groupedByOnes, n);
+    std::vector<std::vector<int>> implicants;
+    std::vector<std::string> binary;
+    groupImplicants(groupedByOnes, n, minterms, mintermCount, binary, implicants);
 }
