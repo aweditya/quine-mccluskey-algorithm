@@ -156,7 +156,67 @@ void groupImplicants(std::vector<int> groups[], int n, int minterms[], int minte
             implicants.push_back(a);
         }
     }
+}
 
+bool isGrouping(std::vector<std::string> binary)
+{
+    for (int i = 0; i < binary.size(); i++)
+    {
+        for (int j = 0; j < binary.size() && j != i; j++)
+        {
+            int hamming = computeHammingDistance(binary[i], binary[j]);
+            if (hamming == 1)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void groupAll(std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants, std::vector<std::string> &finalBinary, std::vector<std::vector<int>> &finalImplicants)
+{
+    std::set<int> used;
+    while (isGrouping(binary))
+    {
+        for (int i = 0; i < binary.size(); i++)
+        {
+            for (int j = 0; j < binary.size() && j != i; j++)
+            {
+                int hamming = computeHammingDistance(binary[i], binary[j]);
+                if (hamming == 1)
+                {
+                    int index = findPositionOfDifference(binary[i], binary[j]);
+                    std::string key = binary[i];
+                    key[index] = '-';
+                    finalBinary.push_back(key);
+                    finalImplicants.push_back(mergeVectors(implicants[i], implicants[j]));
+                    used.insert(i);
+                    used.insert(j);
+                }
+            }
+        }
+        for (int i = 0; i < binary.size(); i++)
+        {
+            if (used.find(i) == used.end())
+            {
+                finalBinary.push_back(binary[i]);
+                finalImplicants.push_back(implicants[i]);
+            }
+        }
+        used.clear();
+        binary.clear();
+        implicants.clear();
+        binary = finalBinary;
+        for (int i = 0; i < implicants.size(); i++)
+        {
+            implicants[i] = finalImplicants[i];
+        }
+    }
+}
+
+void printGrouping(std::vector<std::string> binary, std::vector<std::vector<int>> implicants)
+{
     for (int i = 0; i < binary.size(); i++)
     {
         std::cout << binary[i] << ": ";
@@ -170,9 +230,10 @@ void groupImplicants(std::vector<int> groups[], int n, int minterms[], int minte
 
 int main(int argc, char **argv)
 {
-    int n = 4, mintermCount = 8;
-    int minterms[] = {4, 8, 9, 10, 11, 12, 14, 15};
+    int n = 4, mintermCount = 10;
+    // int minterms[] = {4, 8, 9, 10, 11, 12, 14, 15};
     // int minterms[] = {0, 3, 4, 15};
+    int minterms[] = {0, 1, 2, 3, 6, 7, 8, 12, 13, 15};
 
     std::vector<int> groupedByOnes[5];
     for (int i = 0; i < mintermCount; i++)
@@ -184,4 +245,10 @@ int main(int argc, char **argv)
     std::vector<std::vector<int>> implicants;
     std::vector<std::string> binary;
     groupImplicants(groupedByOnes, n, minterms, mintermCount, binary, implicants);
+    // printGrouping(binary, implicants);
+
+    std::vector<std::vector<int>> finalImplicants;
+    std::vector<std::string> finalBinary;
+    groupAll(binary, implicants, finalBinary, finalImplicants);
+    printGrouping(finalBinary, finalImplicants);
 }
