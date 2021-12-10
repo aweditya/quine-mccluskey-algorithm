@@ -118,7 +118,16 @@ std::vector<int> mergeVectors(std::vector<int> a, std::vector<int> b)
     return c;
 }
 
-void groupImplicants(std::vector<int> groups[], int n, std::vector<int> minterms, std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants)
+void groupByOnes(std::vector<int> minterms, int n, std::vector<std::vector<int>>& groupedByOnes)
+{
+    for (auto minterm : minterms)
+    {
+        int ones = countOnesInBinaryRepresentation(minterm);
+        groupedByOnes[ones].push_back(minterm);
+    }
+}
+
+void groupImplicants(std::vector<std::vector<int>> groups, int n, std::vector<int> minterms, std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants)
 {
     std::set<int> used;
     for (int i = 0; i < n; i++)
@@ -295,12 +304,8 @@ int main(int argc, char **argv)
     // std::vector<int> minterms = {0, 3, 4, 15};
     std::vector<int> minterms = {0, 1, 2, 3, 6, 7, 8, 12, 13, 15};
 
-    std::vector<int> groupedByOnes[5];
-    for (auto minterm : minterms)
-    {
-        int ones = countOnesInBinaryRepresentation(minterm);
-        groupedByOnes[ones].push_back(minterm);
-    }
+    std::vector<std::vector<int>> groupedByOnes(n + 1);
+    groupByOnes(minterms, n, groupedByOnes);
 
     std::vector<std::vector<int>> implicants;
     std::vector<std::string> binary;
