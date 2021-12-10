@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 #include <vector>
 #include <set>
 
@@ -106,7 +107,7 @@ int findPositionOfDifference(std::string a, std::string b)
 std::vector<int> mergeVectors(std::vector<int> a, std::vector<int> b)
 {
     std::vector<int> c;
-    for (auto x : a) 
+    for (auto x : a)
     {
         c.push_back(x);
     }
@@ -117,7 +118,7 @@ std::vector<int> mergeVectors(std::vector<int> a, std::vector<int> b)
     return c;
 }
 
-void groupImplicants(std::vector<int> groups[], int n, int minterms[], int mintermCount, std::vector<std::string> &binary, std::vector<std::vector<int>>& implicants)
+void groupImplicants(std::vector<int> groups[], int n, int minterms[], int mintermCount, std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants)
 {
     std::set<int> used;
     for (int i = 0; i < n; i++)
@@ -148,7 +149,7 @@ void groupImplicants(std::vector<int> groups[], int n, int minterms[], int minte
     // Add minterms that have not been grouped
     for (int i = 0; i < mintermCount; i++)
     {
-        if (used.find(minterms[i]) == used.end()) 
+        if (used.find(minterms[i]) == used.end())
         {
             binary.push_back(convertToBinary(minterms[i], n));
             std::vector<int> a(1, minterms[i]);
@@ -227,6 +228,29 @@ void printGrouping(std::vector<std::string> binary, std::vector<std::vector<int>
     }
 }
 
+void removeDuplicates(std::vector<std::string> binary, std::vector<std::vector<int>> implicants, std::map<std::string, std::vector<int>> &uniqueImplicants)
+{
+    for (int i = 0; i < binary.size(); i++)
+    {
+        uniqueImplicants[binary[i]] = implicants[i];
+    }
+}
+
+void printMap(std::map<std::string, std::vector<int>> map)
+{
+    std::map<std::string, std::vector<int>>::iterator itr;
+    for (itr = map.begin(); itr != map.end(); ++itr)
+    {
+        std::cout << itr->first << ": ";
+        std::vector<int> implicants = itr->second;
+        for (auto x : implicants)
+        {
+            std::cout << x << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
 int main(int argc, char **argv)
 {
     int n = 4, mintermCount = 10;
@@ -244,10 +268,16 @@ int main(int argc, char **argv)
     std::vector<std::vector<int>> implicants;
     std::vector<std::string> binary;
     groupImplicants(groupedByOnes, n, minterms, mintermCount, binary, implicants);
-    // printGrouping(binary, implicants);
+    printGrouping(binary, implicants);
+    std::cout << "------------------------------------\n";
 
     std::vector<std::vector<int>> finalImplicants;
     std::vector<std::string> finalBinary;
     groupAll(binary, implicants, finalBinary, finalImplicants);
     printGrouping(finalBinary, finalImplicants);
+    std::cout << "------------------------------------\n";
+
+    std::map<std::string, std::vector<int>> uniqueImplicants;
+    removeDuplicates(finalBinary, finalImplicants, uniqueImplicants);
+    printMap(uniqueImplicants);
 }
