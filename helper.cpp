@@ -238,11 +238,10 @@ void removeDuplicates(std::vector<std::string> binary, std::vector<std::vector<i
 
 void printMap(std::map<std::string, std::vector<int>> map)
 {
-    std::map<std::string, std::vector<int>>::iterator itr;
-    for (itr = map.begin(); itr != map.end(); ++itr)
+    for (auto it = map.begin(); it != map.end(); ++it)
     {
-        std::cout << itr->first << ": ";
-        std::vector<int> implicants = itr->second;
+        std::cout << it->first << ": ";
+        std::vector<int> implicants = it->second;
         for (auto x : implicants)
         {
             std::cout << x << " ";
@@ -251,12 +250,40 @@ void printMap(std::map<std::string, std::vector<int>> map)
     }
 }
 
-std::vector<std::string> identifyEPI(std::map<std::string, std::vector<int>> implicants, int minterms[], int mintermCount)
+std::vector<std::string> identifyEPI(std::map<std::string, std::vector<int>> implicants, std::vector<int> minterms, int n)
 {
     std::vector<std::string> essentialPIs;
-    for (int i = 0; i < mintermCount; i++)
+    for (auto minterm : minterms)
     {
+        std::string binaryCode = convertToBinary(minterm, n);
+        std::vector<std::string> mintermCoveredIn;
 
+        for (auto it = implicants.begin(); it != implicants.end(); ++it)
+        {
+            std::string groupBinaryCode = it->first;
+
+            int modifiedHamming = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (groupBinaryCode[i] != '-')
+                {
+                    if (binaryCode[i] != groupBinaryCode[i])
+                    {
+                        modifiedHamming++;
+                    }
+                }
+            }
+            if (modifiedHamming == 0)
+            {
+                mintermCoveredIn.push_back(groupBinaryCode);
+            }
+        }
+
+        if (mintermCoveredIn.size() == 1)
+        {
+            essentialPIs.push_back(mintermCoveredIn[0]);
+        }
+        mintermCoveredIn.clear();
     }
     return essentialPIs;
 }
@@ -264,8 +291,8 @@ std::vector<std::string> identifyEPI(std::map<std::string, std::vector<int>> imp
 int main(int argc, char **argv)
 {
     int n = 4;
-    // int minterms[] = {4, 8, 9, 10, 11, 12, 14, 15};
-    // int minterms[] = {0, 3, 4, 15};
+    // std::vector<int> minterms = {4, 8, 9, 10, 11, 12, 14, 15};
+    // std::vector<int> minterms = {0, 3, 4, 15};
     std::vector<int> minterms = {0, 1, 2, 3, 6, 7, 8, 12, 13, 15};
 
     std::vector<int> groupedByOnes[5];
@@ -290,4 +317,12 @@ int main(int argc, char **argv)
     std::map<std::string, std::vector<int>> uniqueImplicants;
     removeDuplicates(finalBinary, finalImplicants, uniqueImplicants);
     printMap(uniqueImplicants);
+
+    std::vector<std::string> essentialPIs = identifyEPI(uniqueImplicants, minterms, n);
+    std::cout << "Essential Prime Implicants:\n";
+    for (auto x : essentialPIs)
+    {
+        std::cout << x << " ";
+    }
+    std::cout << "\n";
 }
