@@ -1,3 +1,4 @@
+#include "core.h"
 #include <iostream>
 #include <map>
 #include <vector>
@@ -10,7 +11,7 @@
  * @param x
  * @return int
  */
-int countOnesInBinaryRepresentation(int x)
+int QuineMcCluskey::countOnesInBinaryRepresentation(int x)
 {
     if (x < 0)
     {
@@ -36,7 +37,7 @@ int countOnesInBinaryRepresentation(int x)
  * @param n
  * @param fixedWidthBinaryRepresentation
  */
-std::string convertToBinary(int x, int n)
+std::string QuineMcCluskey::convertToBinary(int x, int n)
 {
     std::string fixedWidthBinaryRepresentation = "";
     for (int i = 0; i < n; i++)
@@ -70,7 +71,7 @@ std::string convertToBinary(int x, int n)
  * @param n
  * @return int
  */
-int computeHammingDistance(std::string a, std::string b)
+int QuineMcCluskey::computeHammingDistance(std::string a, std::string b)
 {
     int hammingDistance = 0;
     for (int i = 0; i < a.length(); i++)
@@ -94,7 +95,7 @@ int computeHammingDistance(std::string a, std::string b)
  * @param b
  * @return int
  */
-int findPositionOfDifference(std::string a, std::string b)
+int QuineMcCluskey::findPositionOfDifference(std::string a, std::string b)
 {
     int index = 0;
     while (a[index] == b[index])
@@ -104,7 +105,7 @@ int findPositionOfDifference(std::string a, std::string b)
     return index;
 }
 
-std::vector<int> mergeVectors(std::vector<int> a, std::vector<int> b)
+std::vector<int> QuineMcCluskey::mergeVectors(std::vector<int> a, std::vector<int> b)
 {
     std::vector<int> c;
     for (auto x : a)
@@ -118,7 +119,7 @@ std::vector<int> mergeVectors(std::vector<int> a, std::vector<int> b)
     return c;
 }
 
-void groupByOnes(std::vector<int> minterms, int n, std::vector<std::vector<int>>& groupedByOnes)
+void QuineMcCluskey::groupByOnes(std::vector<int> minterms, int n, std::vector<std::vector<int>> &groupedByOnes)
 {
     for (auto minterm : minterms)
     {
@@ -127,7 +128,7 @@ void groupByOnes(std::vector<int> minterms, int n, std::vector<std::vector<int>>
     }
 }
 
-void groupImplicants(std::vector<std::vector<int>> groups, int n, std::vector<int> minterms, std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants)
+void QuineMcCluskey::groupImplicants(std::vector<std::vector<int>> groups, int n, std::vector<int> minterms, std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants)
 {
     std::set<int> used;
     for (int i = 0; i < n; i++)
@@ -167,7 +168,7 @@ void groupImplicants(std::vector<std::vector<int>> groups, int n, std::vector<in
     }
 }
 
-bool isGrouping(std::vector<std::string> binary)
+bool QuineMcCluskey::isGrouping(std::vector<std::string> binary)
 {
     for (int i = 0; i < binary.size(); i++)
     {
@@ -183,7 +184,7 @@ bool isGrouping(std::vector<std::string> binary)
     return false;
 }
 
-void groupAll(std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants, std::vector<std::string> &finalBinary, std::vector<std::vector<int>> &finalImplicants)
+void QuineMcCluskey::groupAll(std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants, std::vector<std::string> &finalBinary, std::vector<std::vector<int>> &finalImplicants)
 {
     std::set<int> used;
     while (isGrouping(binary))
@@ -224,7 +225,7 @@ void groupAll(std::vector<std::string> &binary, std::vector<std::vector<int>> &i
     }
 }
 
-void printGrouping(std::vector<std::string> binary, std::vector<std::vector<int>> implicants)
+void QuineMcCluskey::printGrouping(std::vector<std::string> binary, std::vector<std::vector<int>> implicants)
 {
     for (int i = 0; i < binary.size(); i++)
     {
@@ -237,7 +238,7 @@ void printGrouping(std::vector<std::string> binary, std::vector<std::vector<int>
     }
 }
 
-void removeDuplicates(std::vector<std::string> binary, std::vector<std::vector<int>> implicants, std::map<std::string, std::vector<int>> &uniqueImplicants)
+void QuineMcCluskey::removeDuplicates(std::vector<std::string> binary, std::vector<std::vector<int>> implicants, std::map<std::string, std::vector<int>> &uniqueImplicants)
 {
     for (int i = 0; i < binary.size(); i++)
     {
@@ -245,7 +246,7 @@ void removeDuplicates(std::vector<std::string> binary, std::vector<std::vector<i
     }
 }
 
-void printMap(std::map<std::string, std::vector<int>> map)
+void QuineMcCluskey::printMap(std::map<std::string, std::vector<int>> map)
 {
     for (auto it = map.begin(); it != map.end(); ++it)
     {
@@ -259,7 +260,7 @@ void printMap(std::map<std::string, std::vector<int>> map)
     }
 }
 
-std::vector<std::string> identifyEPI(std::map<std::string, std::vector<int>> implicants, std::vector<int> minterms, int n)
+std::vector<std::string> QuineMcCluskey::identifyEPI(std::map<std::string, std::vector<int>> implicants, std::vector<int> minterms, int n)
 {
     std::vector<std::string> essentialPIs;
     for (auto minterm : minterms)
@@ -299,31 +300,33 @@ std::vector<std::string> identifyEPI(std::map<std::string, std::vector<int>> imp
 
 int main(int argc, char **argv)
 {
+    QuineMcCluskey solver;
+
     int n = 4;
     // std::vector<int> minterms = {4, 8, 9, 10, 11, 12, 14, 15};
     // std::vector<int> minterms = {0, 3, 4, 15};
     std::vector<int> minterms = {0, 1, 2, 3, 6, 7, 8, 12, 13, 15};
 
     std::vector<std::vector<int>> groupedByOnes(n + 1);
-    groupByOnes(minterms, n, groupedByOnes);
+    solver.groupByOnes(minterms, n, groupedByOnes);
 
     std::vector<std::vector<int>> implicants;
     std::vector<std::string> binary;
-    groupImplicants(groupedByOnes, n, minterms, binary, implicants);
-    printGrouping(binary, implicants);
+    solver.groupImplicants(groupedByOnes, n, minterms, binary, implicants);
+    solver.printGrouping(binary, implicants);
     std::cout << "------------------------------------\n";
 
     std::vector<std::vector<int>> finalImplicants;
     std::vector<std::string> finalBinary;
-    groupAll(binary, implicants, finalBinary, finalImplicants);
-    printGrouping(finalBinary, finalImplicants);
+    solver.groupAll(binary, implicants, finalBinary, finalImplicants);
+    solver.printGrouping(finalBinary, finalImplicants);
     std::cout << "------------------------------------\n";
 
     std::map<std::string, std::vector<int>> uniqueImplicants;
-    removeDuplicates(finalBinary, finalImplicants, uniqueImplicants);
-    printMap(uniqueImplicants);
+    solver.removeDuplicates(finalBinary, finalImplicants, uniqueImplicants);
+    solver.printMap(uniqueImplicants);
 
-    std::vector<std::string> essentialPIs = identifyEPI(uniqueImplicants, minterms, n);
+    std::vector<std::string> essentialPIs = solver.identifyEPI(uniqueImplicants, minterms, n);
     std::cout << "Essential Prime Implicants:\n";
     for (auto x : essentialPIs)
     {
