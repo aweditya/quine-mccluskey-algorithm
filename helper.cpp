@@ -118,7 +118,7 @@ std::vector<int> mergeVectors(std::vector<int> a, std::vector<int> b)
     return c;
 }
 
-void groupImplicants(std::vector<int> groups[], int n, int minterms[], int mintermCount, std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants)
+void groupImplicants(std::vector<int> groups[], int n, std::vector<int> minterms, std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants)
 {
     std::set<int> used;
     for (int i = 0; i < n; i++)
@@ -147,12 +147,12 @@ void groupImplicants(std::vector<int> groups[], int n, int minterms[], int minte
     }
 
     // Add minterms that have not been grouped
-    for (int i = 0; i < mintermCount; i++)
+    for (auto minterm : minterms)
     {
-        if (used.find(minterms[i]) == used.end())
+        if (used.find(minterm) == used.end())
         {
-            binary.push_back(convertToBinary(minterms[i], n));
-            std::vector<int> a(1, minterms[i]);
+            binary.push_back(convertToBinary(minterm, n));
+            std::vector<int> a(1, minterm);
             implicants.push_back(a);
         }
     }
@@ -251,23 +251,33 @@ void printMap(std::map<std::string, std::vector<int>> map)
     }
 }
 
-int main(int argc, char **argv)
+std::vector<std::string> identifyEPI(std::map<std::string, std::vector<int>> implicants, int minterms[], int mintermCount)
 {
-    int n = 4, mintermCount = 10;
-    // int minterms[] = {4, 8, 9, 10, 11, 12, 14, 15};
-    // int minterms[] = {0, 3, 4, 15};
-    int minterms[] = {0, 1, 2, 3, 6, 7, 8, 12, 13, 15};
-
-    std::vector<int> groupedByOnes[5];
+    std::vector<std::string> essentialPIs;
     for (int i = 0; i < mintermCount; i++)
     {
-        int ones = countOnesInBinaryRepresentation(minterms[i]);
-        groupedByOnes[ones].push_back(minterms[i]);
+
+    }
+    return essentialPIs;
+}
+
+int main(int argc, char **argv)
+{
+    int n = 4;
+    // int minterms[] = {4, 8, 9, 10, 11, 12, 14, 15};
+    // int minterms[] = {0, 3, 4, 15};
+    std::vector<int> minterms = {0, 1, 2, 3, 6, 7, 8, 12, 13, 15};
+
+    std::vector<int> groupedByOnes[5];
+    for (auto minterm : minterms)
+    {
+        int ones = countOnesInBinaryRepresentation(minterm);
+        groupedByOnes[ones].push_back(minterm);
     }
 
     std::vector<std::vector<int>> implicants;
     std::vector<std::string> binary;
-    groupImplicants(groupedByOnes, n, minterms, mintermCount, binary, implicants);
+    groupImplicants(groupedByOnes, n, minterms, binary, implicants);
     printGrouping(binary, implicants);
     std::cout << "------------------------------------\n";
 
