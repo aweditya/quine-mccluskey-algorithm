@@ -186,6 +186,13 @@ bool QuineMcCluskey::isGrouping(std::vector<std::string> binary)
 
 void QuineMcCluskey::groupAll(std::vector<std::string> &binary, std::vector<std::vector<int>> &implicants, std::vector<std::string> &finalBinary, std::vector<std::vector<int>> &finalImplicants)
 {
+    std::vector<std::string> initialBinary = binary;
+    std::vector<std::vector<int>> initialImplicants;
+    for (int i = 0; i < implicants.size(); i++)
+    {
+        initialImplicants.push_back(implicants[i]);
+    }
+
     std::set<int> used;
     while (isGrouping(binary))
     {
@@ -221,6 +228,15 @@ void QuineMcCluskey::groupAll(std::vector<std::string> &binary, std::vector<std:
         for (int i = 0; i < implicants.size(); i++)
         {
             implicants[i] = finalImplicants[i];
+        }
+    }
+
+    if (finalBinary.size() == 0)
+    {
+        finalBinary = initialBinary;
+        for (int i = 0; i < initialImplicants.size(); i++)
+        {
+            finalImplicants.push_back(initialImplicants[i]);
         }
     }
 }
@@ -305,7 +321,8 @@ int main(int argc, char **argv)
     int n = 4;
     // std::vector<int> minterms = {4, 8, 9, 10, 11, 12, 14, 15};
     // std::vector<int> minterms = {0, 3, 4, 15};
-    std::vector<int> minterms = {0, 1, 2, 3, 6, 7, 8, 12, 13, 15};
+    // std::vector<int> minterms = {0, 1, 2, 3, 6, 7, 8, 12, 13, 15};
+    std::vector<int> minterms = {0, 1, 2, 5, 6, 7};
 
     std::vector<std::vector<int>> groupedByOnes(n + 1);
     solver.groupByOnes(minterms, n, groupedByOnes);
